@@ -1,0 +1,436 @@
+country,count
+united states,223969628
+india,91732357
+brazil,60975592
+united kingdom,37856499
+france,25100460
+canada,22962402
+mexico,21660407
+indonesia,18053761
+italy,16824421
+spain,15700717
+australia,14290830
+germany,13897331
+colombia,12346452
+turkey,11756331
+argentina,11477648
+china,11283721
+philippines,10275541
+netherlands,9902021
+south africa,9368872
+pakistan,8016509
+peru,7699464
+chile,7304789
+egypt,6440566
+united arab emirates,6397793
+saudi arabia,6311940
+malaysia,6149092
+nigeria,5912984
+russia,5014627
+poland,4868341
+sweden,4409706
+vietnam,4337052
+belgium,4304736
+portugal,4113847
+bangladesh,3818027
+ecuador,3715696
+switzerland,3706201
+venezuela,3590481
+iran,3328507
+singapore,3254301
+morocco,3078002
+romania,3068708
+denmark,2982571
+kenya,2894111
+ukraine,2687426
+thailand,2657318
+japan,2607243
+ireland,2580151
+new zealand,2547730
+south korea,2451807
+algeria,2263438
+norway,2180157
+taiwan,2138010
+hong kong s.a.r.,2127634
+israel,2051674
+czechia,1879985
+austria,1791733
+greece,1697952
+ghana,1664435
+sri lanka,1417569
+dominican republic,1413919
+finland,1382492
+tunisia,1312452
+guatemala,1255438
+bolivia,1217317
+costa rica,1207409
+hungary,1158674
+uruguay,1098236
+jordan,1058816
+qatar,1053969
+serbia,1039923
+nepal,986578
+iraq,977700
+panama,973411
+puerto rico,908626
+bulgaria,858920
+lebanon,832696
+tanzania,802031
+españa,775470
+el salvador,772300
+senegal,770853
+uganda,762789
+paraguay,735648
+kuwait,729979
+croatia,676936
+cameroon,674295
+honduras,669886
+oman,648841
+kazakhstan,628091
+slovakia,617768
+ethiopia,615786
+angola,611012
+jamaica,609931
+zimbabwe,583920
+myanmar,547316
+nicaragua,525435
+côte d’ivoire,520403
+lithuania,505841
+zambia,500365
+azerbaijan,494444
+belarus,480882
+trinidad and tobago,469437
+bahrain,415647
+georgia,410271
+mozambique,399062
+slovenia,374354
+cambodia,374070
+ivory coast,358142
+cyprus,354703
+albania,353115
+latvia,343392
+syria,341394
+mauritius,316430
+sudan,311382
+democratic republic of congo,295329
+luxembourg,292169
+afghanistan,283879
+bosnia and herzegovina,275524
+botswana,272393
+papua new guinea,264940
+estonia,255328
+armenia,251694
+namibia,250499
+malta,250021
+cuba,246700
+palestine,244628
+libya,235013
+uzbekistan,232618
+rwanda,232580
+benin,232077
+mali,231503
+burkina faso,230621
+moldova,224020
+yemen,220260
+madagascar,218809
+haiti,203225
+iceland,201151
+malawi,191401
+hong kong sar,166470
+guinea,165496
+mongolia,163937
+togo,163239
+fiji,159559
+the bahamas,155166
+somalia,143080
+gabon,137913
+barbados,126328
+maldives,113966
+congo,109274
+liberia,102259
+guyana,99119
+sierra leone,98621
+kyrgyzstan,92566
+montenegro,91355
+brunei,88634
+north macedonia,88193
+kosovo,83296
+eswatini,75975
+the gambia,75452
+suriname,75315
+mauritania,75092
+bhutan,74978
+laos,73794
+belize,70467
+congo (drc,68464
+lesotho,65373
+curacao,63966
+new caledonia,61124
+guam,60353
+cape verde,59096
+chad,57544
+cayman islands,54288
+french polynesia,52655
+bermuda,52450
+burundi,50220
+reunion,48359
+aruba,48078
+andorra,45444
+south sudan,45183
+st. lucia,44991
+djibouti,43687
+monaco,43446
+isle of man,37982
+"virgin islands, u.s.",36709
+tajikistan,35852
+niger,34565
+antigua and barbuda,34208
+grenada,31784
+guernsey,30679
+seychelles,29897
+spain area,29789
+turkmenistan,29140
+gibraltar,24748
+central african republic,23934
+east timor,23320
+equatorial guinea,22962
+brasil,21735
+american samoa,21010
+jersey,20498
+french guiana,19559
+dominica,19242
+liechtenstein,18522
+st vincent and the grenadines,17687
+turks and caicos islands,17618
+greenland,16353
+solomon islands,16351
+saint kitts and nevis,16214
+british virgin islands,15553
+faroe islands,15337
+vanuatu,15048
+french-guadeloupe,15029
+comoros,13977
+méxico,13654
+northern mariana islands,12895
+guinea-bissau,12352
+anguilla,11932
+samoa,11819
+san marino,11266
+nederland,10709
+مصر,10051
+tonga,10037
+antarctica,9306
+federated states of micronesia,9157
+south africa metropolitan area,8151
+us virgin islands,7492
+eritrea,7457
+sao tome and principe,7191
+brazil metropolitan area,7124
+kuwait city metropolitan area,7031
+french-martinique,6753
+saint vincent and the grenadines,6742
+sint maarten,6664
+kiribati,6624
+republic of the congo,5975
+cook islands,5664
+sverige,5369
+british indian ocean territory,5217
+palau,5001
+mayotte,4429
+vatican,3882
+italia,3632
+bonaire,3026
+area,3012
+deutschland,2854
+macau s.a.r.,2707
+north korea,2693
+falkland islands (malvinas),2552
+tuvalu,2461
+saint pierre and miquelon,2321
+wallis and futuna,2279
+christmas island,2254
+montserrat,2196
+gaza strip,2176
+nauru,2151
+pilipinas,2037
+saint helena,1894
+црна гора,1894
+macao sar,1861
+st kitts and nevis,1584
+niue,1514
+saint lucia,1459
+west bank,1444
+french southern territories,1339
+saint barthelemy,1326
+united states minor outlying islands,1275
+svalbard,1098
+tokelau,980
+pitcairn,977
+south georgia and the south sandwich islands,964
+marshall islands,922
+"virgin islands, british",854
+türkiye,721
+norge,687
+heard island and mcdonald islands,565
+schweiz,559
+danmark,504
+lietuva,482
+日本,461
+dach,399
+slovenija,373
+st martin,365
+åland islands,296
+são tomé and príncipe,295
+suomi,275
+österreich,266
+apac,216
+saint eustatius,216
+ascension and tristan da cunha,213
+namer,206
+sénégal,192
+česko,139
+ελλάδα,137
+timor-leste,118
+brazilië,103
+السعودية,99
+côte d'ivoire,65
+perú,58
+ประเทศไทย,53
+república dominicana,51
+loralai district,47
+republica moldova,44
+الجزائر,42
+belgië,36
+geneva metropolitan area,36
+پاکستان,36
+polska,30
+中国,30
+cologne bonn region,27
+россия,23
+frankfurt rhine-main metropolitan area,22
+south georgia and south sandwich islands,21
+golan heights,20
+hannover-braunschweig-göttingen-wolfsburg region,20
+hrvatska,20
+riyadh region,20
+台湾,20
+jafarabad district,18
+polaand,18
+jan mayen,17
+bosna i hercegovina,16
+panjgur district,15
+ziarat district,15
+kingman reef,14
+stuttgart region,14
+democratic republic of the congo,12
+palmyra atoll,12
+tchad,12
+узбекистан,12
+اليمن,12
+french southern and antarctic lands,11
+pa-li-chia-ssu,11
+texas metropolitan area,11
+wake island,11
+беларусь,11
+monterrey metropolitan area,10
+shikotan island,10
+българия,10
+sint eustatius and saba,9
+المغرب,9
+golan heights subdistrict,8
+slovensko,8
+বাংলাদেশ,8
+cameroun,7
+ایران,7
+bangkok metropolitan area,6
+belfast metropolitan area,6
+brazilia,6
+howland island,6
+polonia,6
+ísland,6
+україна,6
+falkland islands,5
+martinique,5
+românia,5
+frankrig,4
+jakarta metropolitan area,4
+polen,4
+portugalia,4
+中华人民共和国,4
+alemania,3
+ayiti,3
+bogotá d.c. metropolitan area,3
+frankrike,3
+norfolk island,3
+palestinian state,3
+san luis potosí metropolitan area,3
+shikarpur district,3
+spojené královsktví,3
+tyskland,3
+vatican city,3
+zhob district,3
+κύπρος,3
+казахстан,3
+србија,3
+ليبيا,3
+azerbaycan,2
+eretria,2
+finlandiya,2
+frankrijk,2
+greater vancouver metropolitan area,2
+guadeloupe,2
+guinée,2
+iriphabliki yaseningizimu afrika,2
+italien,2
+liege metropolitan area,2
+portugalsko,2
+pune/pimpri-chinchwad area,2
+queretaro metropolitan area,2
+san juan-carolina area,2
+tallahassee metropolitan area,2
+western sahara,2
+índia,2
+армения,2
+alemanha,1
+algérie,1
+brunei darussalam,1
+copenhagen metropolitan area,1
+doha metropolitan area,1
+dänemark,1
+eesti,1
+filipinas,1
+finlandia,1
+fquih ben salah metropolitan area,1
+francia,1
+gold coast,1
+hazara town,1
+houma-thibodaux area,1
+iraque,1
+jonesboro-paragould area,1
+jordania,1
+kansas city metropolitan area,1
+kyiv metropolitan area,1
+letonia,1
+lugano metropolitan area,1
+mastung district,1
+mexiko,1
+oklahoma city metropolitan area,1
+oʻzbekiston,1
+philipines,1
+republikken kina,1
+shqipëria,1
+shreveport-bossier city area,1
+tampico metropolitan area,1
+thessaloniki metropolitan area,1
+urbana-champaign area,1
+zagreb metropolitan area,1
+áustria,1
+республика беларусь,1
+украина,1
+اليابان,1
+تونس,1
+عمان,1
+فلسطين,1
+ශ්‍රී ලංකාව,1
+ኢትዮጵያ,1
+斯洛文尼亚,1

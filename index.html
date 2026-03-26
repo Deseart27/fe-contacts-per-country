@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FullEnrich — Contacts per Country</title>
+<script src="https://cdn.plot.ly/plotly-2.35.0.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    background: #f5f6fa;
+    color: #1a1a2e;
+    padding: 32px 40px;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 24px;
+  }
+
+  /* Region buttons */
+  .region-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .region-tab {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1.5px solid #dde1e8;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .region-tab:hover {
+    border-color: #3366cc;
+    color: #3366cc;
+  }
+
+  .region-tab.active {
+    background: #3366cc;
+    border-color: #3366cc;
+    color: #fff;
+  }
+
+  /* Main layout */
+  .dashboard {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .map-container {
+    flex: 0 0 58%;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e8eaef;
+    padding: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  #map {
+    width: 100%;
+    height: 420px;
+  }
+
+  /* Metrics grid */
+  .metrics-panel {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .metric-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e8eaef;
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: all 0.25s;
+  }
+
+  .metric-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    transform: translateY(-1px);
+  }
+
+  .metric-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a2e;
+    line-height: 1.1;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 6px;
+  }
+
+  .metric-card.highlight {
+    border-color: #3366cc;
+    background: linear-gradient(135deg, #f0f4ff 0%, #fff 100%);
+  }
+
+  .metric-card.highlight .metric-value {
+    color: #3366cc;
+  }
+
+  /* Country list */
+  .country-list-card {
+    grid-column: 1 / -1;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e8eaef;
+    padding: 16px 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  .country-list-card h3 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .country-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 13px;
+  }
+
+  .country-row:last-child { border-bottom: none; }
+
+  .country-name { color: #333; font-weight: 500; }
+
+  .country-count {
+    font-weight: 600;
+    color: #3366cc;
+  }
+
+  .bar-bg {
+    width: 80px;
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    margin-left: 10px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: #3366cc;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+
+<h1>FullEnrich — Contacts per Country</h1>
+<p class="subtitle">Distribution of contacts across countries in our database</p>
+
+<div class="region-tabs" id="regionTabs"></div>
+
+<div class="dashboard">
+  <div class="map-container">
+    <div id="map"></div>
+  </div>
+  <div class="metrics-panel" id="metrics"></div>
+</div>
+
+<script>
+/* DATA will be injected by generate.py — or edit directly here */
+const DATA = [{"country": "United States", "iso": "USA", "region": "North America", "contacts": 223969628}, {"country": "India", "iso": "IND", "region": "Asia-Pacific", "contacts": 91732357}, {"country": "Brazil", "iso": "BRA", "region": "Latam", "contacts": 61004560}, {"country": "United Kingdom", "iso": "GBR", "region": "Europe", "contacts": 37856499}, {"country": "France", "iso": "FRA", "region": "Europe", "contacts": 25100470}, {"country": "Canada", "iso": "CAN", "region": "North America", "contacts": 22962402}, {"country": "Mexico", "iso": "MEX", "region": "Latam", "contacts": 21674062}, {"country": "Indonesia", "iso": "IDN", "region": "Asia-Pacific", "contacts": 18053761}, {"country": "Italy", "iso": "ITA", "region": "Europe", "contacts": 16828055}, {"country": "Spain", "iso": "ESP", "region": "Europe", "contacts": 16505976}, {"country": "Australia", "iso": "AUS", "region": "Asia-Pacific", "contacts": 14290830}, {"country": "Germany", "iso": "DEU", "region": "Europe", "contacts": 13900191}, {"country": "Colombia", "iso": "COL", "region": "Latam", "contacts": 12346452}, {"country": "Turkey", "iso": "TUR", "region": "Europe", "contacts": 11757052}, {"country": "Argentina", "iso": "ARG", "region": "Latam", "contacts": 11477648}, {"country": "China", "iso": "CHN", "region": "Asia-Pacific", "contacts": 11283755}, {"country": "Philippines", "iso": "PHL", "region": "Asia-Pacific", "contacts": 10277580}, {"country": "Netherlands", "iso": "NLD", "region": "Europe", "contacts": 9912730}, {"country": "South Africa", "iso": "ZAF", "region": "Middle East & Africa", "contacts": 9377025}, {"country": "Pakistan", "iso": "PAK", "region": "Asia-Pacific", "contacts": 8016545}, {"country": "Peru", "iso": "PER", "region": "Latam", "contacts": 7699522}, {"country": "Chile", "iso": "CHL", "region": "Latam", "contacts": 7304789}, {"country": "Egypt", "iso": "EGY", "region": "Middle East & Africa", "contacts": 6450617}, {"country": "United Arab Emirates", "iso": "ARE", "region": "Middle East & Africa", "contacts": 6397793}, {"country": "Saudi Arabia", "iso": "SAU", "region": "Middle East & Africa", "contacts": 6312039}, {"country": "Malaysia", "iso": "MYS", "region": "Asia-Pacific", "contacts": 6149092}, {"country": "Nigeria", "iso": "NGA", "region": "Middle East & Africa", "contacts": 5912984}, {"country": "Russia", "iso": "RUS", "region": "Europe", "contacts": 5014650}, {"country": "Poland", "iso": "POL", "region": "Europe", "contacts": 4868399}, {"country": "Sweden", "iso": "SWE", "region": "Europe", "contacts": 4415075}, {"country": "Vietnam", "iso": "VNM", "region": "Asia-Pacific", "contacts": 4337052}, {"country": "Belgium", "iso": "BEL", "region": "Europe", "contacts": 4304772}, {"country": "Portugal", "iso": "PRT", "region": "Europe", "contacts": 4113853}, {"country": "Bangladesh", "iso": "BGD", "region": "Asia-Pacific", "contacts": 3818035}, {"country": "Ecuador", "iso": "ECU", "region": "Latam", "contacts": 3715696}, {"country": "Switzerland", "iso": "CHE", "region": "Europe", "contacts": 3706760}, {"country": "Venezuela", "iso": "VEN", "region": "Latam", "contacts": 3590481}, {"country": "Iran", "iso": "IRN", "region": "Middle East & Africa", "contacts": 3328514}, {"country": "Singapore", "iso": "SGP", "region": "Asia-Pacific", "contacts": 3254301}, {"country": "Morocco", "iso": "MAR", "region": "Middle East & Africa", "contacts": 3078011}, {"country": "Romania", "iso": "ROU", "region": "Europe", "contacts": 3068713}, {"country": "Denmark", "iso": "DNK", "region": "Europe", "contacts": 2983076}, {"country": "Kenya", "iso": "KEN", "region": "Middle East & Africa", "contacts": 2894111}, {"country": "Ukraine", "iso": "UKR", "region": "Europe", "contacts": 2687433}, {"country": "Thailand", "iso": "THA", "region": "Asia-Pacific", "contacts": 2657371}, {"country": "Japan", "iso": "JPN", "region": "Asia-Pacific", "contacts": 2607705}, {"country": "Ireland", "iso": "IRL", "region": "Europe", "contacts": 2580151}, {"country": "New Zealand", "iso": "NZL", "region": "Asia-Pacific", "contacts": 2547730}, {"country": "South Korea", "iso": "KOR", "region": "Asia-Pacific", "contacts": 2451807}, {"country": "Hong Kong", "iso": "HKG", "region": "Asia-Pacific", "contacts": 2294104}, {"country": "Algeria", "iso": "DZA", "region": "Middle East & Africa", "contacts": 2263481}, {"country": "Norway", "iso": "NOR", "region": "Europe", "contacts": 2180844}, {"country": "Taiwan", "iso": "TWN", "region": "Asia-Pacific", "contacts": 2138030}, {"country": "Israel", "iso": "ISR", "region": "Middle East & Africa", "contacts": 2051674}, {"country": "Czechia", "iso": "CZE", "region": "Europe", "contacts": 1880124}, {"country": "Austria", "iso": "AUT", "region": "Europe", "contacts": 1792000}, {"country": "Greece", "iso": "GRC", "region": "Europe", "contacts": 1698089}, {"country": "Ghana", "iso": "GHA", "region": "Middle East & Africa", "contacts": 1664435}, {"country": "Sri Lanka", "iso": "LKA", "region": "Asia-Pacific", "contacts": 1417570}, {"country": "Dominican Republic", "iso": "DOM", "region": "Latam", "contacts": 1413970}, {"country": "Finland", "iso": "FIN", "region": "Europe", "contacts": 1382770}, {"country": "Tunisia", "iso": "TUN", "region": "Middle East & Africa", "contacts": 1312453}, {"country": "Guatemala", "iso": "GTM", "region": "Latam", "contacts": 1255438}, {"country": "Bolivia", "iso": "BOL", "region": "Latam", "contacts": 1217317}, {"country": "Costa Rica", "iso": "CRI", "region": "Latam", "contacts": 1207409}, {"country": "Hungary", "iso": "HUN", "region": "Europe", "contacts": 1158674}, {"country": "Uruguay", "iso": "URY", "region": "Latam", "contacts": 1098236}, {"country": "Jordan", "iso": "JOR", "region": "Middle East & Africa", "contacts": 1058817}, {"country": "Qatar", "iso": "QAT", "region": "Middle East & Africa", "contacts": 1053969}, {"country": "Serbia", "iso": "SRB", "region": "Europe", "contacts": 1039926}, {"country": "Nepal", "iso": "NPL", "region": "Asia-Pacific", "contacts": 986578}, {"country": "Iraq", "iso": "IRQ", "region": "Middle East & Africa", "contacts": 977701}, {"country": "Panama", "iso": "PAN", "region": "Latam", "contacts": 973411}, {"country": "Puerto Rico", "iso": "PRI", "region": "North America", "contacts": 908626}, {"country": "Ivory Coast", "iso": "CIV", "region": "Middle East & Africa", "contacts": 878610}, {"country": "Bulgaria", "iso": "BGR", "region": "Europe", "contacts": 858930}, {"country": "Lebanon", "iso": "LBN", "region": "Middle East & Africa", "contacts": 832696}, {"country": "Tanzania", "iso": "TZA", "region": "Middle East & Africa", "contacts": 802031}, {"country": "El Salvador", "iso": "SLV", "region": "Latam", "contacts": 772300}, {"country": "Senegal", "iso": "SEN", "region": "Middle East & Africa", "contacts": 771045}, {"country": "Uganda", "iso": "UGA", "region": "Middle East & Africa", "contacts": 762789}, {"country": "Kuwait", "iso": "KWT", "region": "Middle East & Africa", "contacts": 737010}, {"country": "Paraguay", "iso": "PRY", "region": "Latam", "contacts": 735648}, {"country": "Croatia", "iso": "HRV", "region": "Europe", "contacts": 676956}, {"country": "Cameroon", "iso": "CMR", "region": "Middle East & Africa", "contacts": 674302}, {"country": "Honduras", "iso": "HND", "region": "Latam", "contacts": 669886}, {"country": "Oman", "iso": "OMN", "region": "Middle East & Africa", "contacts": 648842}, {"country": "Kazakhstan", "iso": "KAZ", "region": "Asia-Pacific", "contacts": 628094}, {"country": "Slovakia", "iso": "SVK", "region": "Europe", "contacts": 617776}, {"country": "Ethiopia", "iso": "ETH", "region": "Middle East & Africa", "contacts": 615787}, {"country": "Angola", "iso": "AGO", "region": "Middle East & Africa", "contacts": 611012}, {"country": "Jamaica", "iso": "JAM", "region": "Latam", "contacts": 609931}, {"country": "Zimbabwe", "iso": "ZWE", "region": "Middle East & Africa", "contacts": 583920}, {"country": "Myanmar", "iso": "MMR", "region": "Asia-Pacific", "contacts": 547316}, {"country": "Nicaragua", "iso": "NIC", "region": "Latam", "contacts": 525435}, {"country": "Lithuania", "iso": "LTU", "region": "Europe", "contacts": 506323}, {"country": "Zambia", "iso": "ZMB", "region": "Middle East & Africa", "contacts": 500365}, {"country": "Azerbaijan", "iso": "AZE", "region": "Europe", "contacts": 494446}, {"country": "Belarus", "iso": "BLR", "region": "Europe", "contacts": 480894}, {"country": "Trinidad and Tobago", "iso": "TTO", "region": "Latam", "contacts": 469437}, {"country": "Bahrain", "iso": "BHR", "region": "Middle East & Africa", "contacts": 415647}, {"country": "Georgia", "iso": "GEO", "region": "Europe", "contacts": 410271}, {"country": "Mozambique", "iso": "MOZ", "region": "Middle East & Africa", "contacts": 399062}, {"country": "Slovenia", "iso": "SVN", "region": "Europe", "contacts": 374728}, {"country": "Cambodia", "iso": "KHM", "region": "Asia-Pacific", "contacts": 374070}, {"country": "DR Congo", "iso": "COD", "region": "Middle East & Africa", "contacts": 363805}, {"country": "Cyprus", "iso": "CYP", "region": "Europe", "contacts": 354706}, {"country": "Albania", "iso": "ALB", "region": "Europe", "contacts": 353116}, {"country": "Latvia", "iso": "LVA", "region": "Europe", "contacts": 343393}, {"country": "Syria", "iso": "SYR", "region": "Middle East & Africa", "contacts": 341394}, {"country": "Mauritius", "iso": "MUS", "region": "Middle East & Africa", "contacts": 316430}, {"country": "Sudan", "iso": "SDN", "region": "Middle East & Africa", "contacts": 311382}, {"country": "Luxembourg", "iso": "LUX", "region": "Europe", "contacts": 292169}, {"country": "Afghanistan", "iso": "AFG", "region": "Asia-Pacific", "contacts": 283879}, {"country": "Bosnia and Herzegovina", "iso": "BIH", "region": "Europe", "contacts": 275540}, {"country": "Botswana", "iso": "BWA", "region": "Middle East & Africa", "contacts": 272393}, {"country": "Papua New Guinea", "iso": "PNG", "region": "Asia-Pacific", "contacts": 264940}, {"country": "Estonia", "iso": "EST", "region": "Europe", "contacts": 255329}, {"country": "Armenia", "iso": "ARM", "region": "Europe", "contacts": 251696}, {"country": "Namibia", "iso": "NAM", "region": "Middle East & Africa", "contacts": 250499}, {"country": "Malta", "iso": "MLT", "region": "Europe", "contacts": 250021}, {"country": "Palestine", "iso": "PSE", "region": "Middle East & Africa", "contacts": 248252}, {"country": "Cuba", "iso": "CUB", "region": "Latam", "contacts": 246700}, {"country": "Libya", "iso": "LBY", "region": "Middle East & Africa", "contacts": 235016}, {"country": "Uzbekistan", "iso": "UZB", "region": "Asia-Pacific", "contacts": 232631}, {"country": "Rwanda", "iso": "RWA", "region": "Middle East & Africa", "contacts": 232580}, {"country": "Benin", "iso": "BEN", "region": "Middle East & Africa", "contacts": 232077}, {"country": "Mali", "iso": "MLI", "region": "Middle East & Africa", "contacts": 231503}, {"country": "Burkina Faso", "iso": "BFA", "region": "Middle East & Africa", "contacts": 230621}, {"country": "Moldova", "iso": "MDA", "region": "Europe", "contacts": 224064}, {"country": "Yemen", "iso": "YEM", "region": "Middle East & Africa", "contacts": 220272}, {"country": "Madagascar", "iso": "MDG", "region": "Middle East & Africa", "contacts": 218809}, {"country": "Haiti", "iso": "HTI", "region": "Latam", "contacts": 203228}, {"country": "Iceland", "iso": "ISL", "region": "Europe", "contacts": 201157}, {"country": "Malawi", "iso": "MWI", "region": "Middle East & Africa", "contacts": 191401}, {"country": "Guinea", "iso": "GIN", "region": "Middle East & Africa", "contacts": 165498}, {"country": "Mongolia", "iso": "MNG", "region": "Asia-Pacific", "contacts": 163937}, {"country": "Togo", "iso": "TGO", "region": "Middle East & Africa", "contacts": 163239}, {"country": "Fiji", "iso": "FJI", "region": "Asia-Pacific", "contacts": 159559}, {"country": "Bahamas", "iso": "BHS", "region": "Latam", "contacts": 155166}, {"country": "Somalia", "iso": "SOM", "region": "Middle East & Africa", "contacts": 143080}, {"country": "Gabon", "iso": "GAB", "region": "Middle East & Africa", "contacts": 137913}, {"country": "Barbados", "iso": "BRB", "region": "Latam", "contacts": 126328}, {"country": "Congo", "iso": "COG", "region": "Middle East & Africa", "contacts": 115249}, {"country": "Maldives", "iso": "MDV", "region": "Asia-Pacific", "contacts": 113966}, {"country": "Liberia", "iso": "LBR", "region": "Middle East & Africa", "contacts": 102259}, {"country": "Guyana", "iso": "GUY", "region": "Latam", "contacts": 99119}, {"country": "Sierra Leone", "iso": "SLE", "region": "Middle East & Africa", "contacts": 98621}, {"country": "Montenegro", "iso": "MNE", "region": "Europe", "contacts": 93249}, {"country": "Kyrgyzstan", "iso": "KGZ", "region": "Asia-Pacific", "contacts": 92566}, {"country": "Brunei", "iso": "BRN", "region": "Asia-Pacific", "contacts": 88635}, {"country": "North Macedonia", "iso": "MKD", "region": "Europe", "contacts": 88193}, {"country": "Kosovo", "iso": "XKX", "region": "Europe", "contacts": 83296}, {"country": "Eswatini", "iso": "SWZ", "region": "Middle East & Africa", "contacts": 75975}, {"country": "Gambia", "iso": "GMB", "region": "Middle East & Africa", "contacts": 75452}, {"country": "Suriname", "iso": "SUR", "region": "Latam", "contacts": 75315}, {"country": "Mauritania", "iso": "MRT", "region": "Middle East & Africa", "contacts": 75092}, {"country": "Bhutan", "iso": "BTN", "region": "Asia-Pacific", "contacts": 74978}, {"country": "Laos", "iso": "LAO", "region": "Asia-Pacific", "contacts": 73794}, {"country": "Belize", "iso": "BLZ", "region": "Latam", "contacts": 70467}, {"country": "Lesotho", "iso": "LSO", "region": "Middle East & Africa", "contacts": 65373}, {"country": "Curaçao", "iso": "CUW", "region": "Latam", "contacts": 63966}, {"country": "New Caledonia", "iso": "NCL", "region": "Asia-Pacific", "contacts": 61124}, {"country": "Guam", "iso": "GUM", "region": "Asia-Pacific", "contacts": 60353}, {"country": "Cape Verde", "iso": "CPV", "region": "Middle East & Africa", "contacts": 59096}, {"country": "Chad", "iso": "TCD", "region": "Middle East & Africa", "contacts": 57556}, {"country": "Cayman Islands", "iso": "CYM", "region": "Latam", "contacts": 54288}, {"country": "French Polynesia", "iso": "PYF", "region": "Asia-Pacific", "contacts": 52655}, {"country": "Bermuda", "iso": "BMU", "region": "North America", "contacts": 52450}, {"country": "Burundi", "iso": "BDI", "region": "Middle East & Africa", "contacts": 50220}, {"country": "Réunion", "iso": "REU", "region": "Asia-Pacific", "contacts": 48359}, {"country": "Aruba", "iso": "ABW", "region": "Latam", "contacts": 48078}, {"country": "Saint Lucia", "iso": "LCA", "region": "Latam", "contacts": 46450}, {"country": "Andorra", "iso": "AND", "region": "Europe", "contacts": 45444}, {"country": "South Sudan", "iso": "SSD", "region": "Middle East & Africa", "contacts": 45183}, {"country": "U.S. Virgin Islands", "iso": "VIR", "region": "Latam", "contacts": 44201}, {"country": "Djibouti", "iso": "DJI", "region": "Middle East & Africa", "contacts": 43687}, {"country": "Monaco", "iso": "MCO", "region": "Europe", "contacts": 43446}, {"country": "Isle of Man", "iso": "IMN", "region": "Europe", "contacts": 37982}, {"country": "Tajikistan", "iso": "TJK", "region": "Asia-Pacific", "contacts": 35852}, {"country": "Niger", "iso": "NER", "region": "Middle East & Africa", "contacts": 34565}, {"country": "Antigua and Barbuda", "iso": "ATG", "region": "Latam", "contacts": 34208}, {"country": "Grenada", "iso": "GRD", "region": "Latam", "contacts": 31784}, {"country": "Guernsey", "iso": "GGY", "region": "Europe", "contacts": 30679}, {"country": "Seychelles", "iso": "SYC", "region": "Middle East & Africa", "contacts": 29897}, {"country": "Turkmenistan", "iso": "TKM", "region": "Asia-Pacific", "contacts": 29140}, {"country": "Gibraltar", "iso": "GIB", "region": "Europe", "contacts": 24748}, {"country": "Saint Vincent and the Grenadines", "iso": "VCT", "region": "Latam", "contacts": 24429}, {"country": "Central African Republic", "iso": "CAF", "region": "Middle East & Africa", "contacts": 23934}, {"country": "East Timor", "iso": "TLS", "region": "Asia-Pacific", "contacts": 23438}, {"country": "Equatorial Guinea", "iso": "GNQ", "region": "Middle East & Africa", "contacts": 22962}, {"country": "American Samoa", "iso": "ASM", "region": "Asia-Pacific", "contacts": 21010}, {"country": "Jersey", "iso": "JEY", "region": "Europe", "contacts": 20498}, {"country": "French Guiana", "iso": "GUF", "region": "Latam", "contacts": 19559}, {"country": "Dominica", "iso": "DMA", "region": "Latam", "contacts": 19242}, {"country": "Liechtenstein", "iso": "LIE", "region": "Europe", "contacts": 18522}, {"country": "Saint Kitts and Nevis", "iso": "KNA", "region": "Latam", "contacts": 17798}, {"country": "Turks and Caicos Islands", "iso": "TCA", "region": "Latam", "contacts": 17618}, {"country": "British Virgin Islands", "iso": "VGB", "region": "Latam", "contacts": 16407}, {"country": "Greenland", "iso": "GRL", "region": "North America", "contacts": 16353}, {"country": "Solomon Islands", "iso": "SLB", "region": "Asia-Pacific", "contacts": 16351}, {"country": "Faroe Islands", "iso": "FRO", "region": "Europe", "contacts": 15337}, {"country": "Vanuatu", "iso": "VUT", "region": "Asia-Pacific", "contacts": 15048}, {"country": "Guadeloupe", "iso": "GLP", "region": "Latam", "contacts": 15031}, {"country": "Comoros", "iso": "COM", "region": "Middle East & Africa", "contacts": 13977}, {"country": "Northern Mariana Islands", "iso": "MNP", "region": "Asia-Pacific", "contacts": 12895}, {"country": "Guinea-Bissau", "iso": "GNB", "region": "Middle East & Africa", "contacts": 12352}, {"country": "Anguilla", "iso": "AIA", "region": "Latam", "contacts": 11932}, {"country": "Samoa", "iso": "WSM", "region": "Asia-Pacific", "contacts": 11819}, {"country": "San Marino", "iso": "SMR", "region": "Europe", "contacts": 11266}, {"country": "Tonga", "iso": "TON", "region": "Asia-Pacific", "contacts": 10037}, {"country": "Antarctica", "iso": "ATA", "region": "Other", "contacts": 9306}, {"country": "Micronesia", "iso": "FSM", "region": "Asia-Pacific", "contacts": 9157}, {"country": "São Tomé and Príncipe", "iso": "STP", "region": "Middle East & Africa", "contacts": 7486}, {"country": "Eritrea", "iso": "ERI", "region": "Middle East & Africa", "contacts": 7459}, {"country": "Martinique", "iso": "MTQ", "region": "Latam", "contacts": 6758}, {"country": "Sint Maarten", "iso": "SXM", "region": "Latam", "contacts": 6664}, {"country": "Kiribati", "iso": "KIR", "region": "Asia-Pacific", "contacts": 6624}, {"country": "Cook Islands", "iso": "COK", "region": "Asia-Pacific", "contacts": 5664}, {"country": "Palau", "iso": "PLW", "region": "Asia-Pacific", "contacts": 5001}, {"country": "Macau", "iso": "MAC", "region": "Asia-Pacific", "contacts": 4568}, {"country": "Mayotte", "iso": "MYT", "region": "Asia-Pacific", "contacts": 4429}, {"country": "Vatican City", "iso": "VAT", "region": "Europe", "contacts": 3885}, {"country": "Bonaire", "iso": "BES", "region": "Latam", "contacts": 3026}, {"country": "North Korea", "iso": "PRK", "region": "Asia-Pacific", "contacts": 2693}, {"country": "Falkland Islands", "iso": "FLK", "region": "Latam", "contacts": 2557}, {"country": "Tuvalu", "iso": "TUV", "region": "Asia-Pacific", "contacts": 2461}, {"country": "Saint Pierre and Miquelon", "iso": "SPM", "region": "Latam", "contacts": 2321}, {"country": "Wallis and Futuna", "iso": "WLF", "region": "Asia-Pacific", "contacts": 2279}, {"country": "Christmas Island", "iso": "CXR", "region": "Asia-Pacific", "contacts": 2254}, {"country": "Montserrat", "iso": "MSR", "region": "Latam", "contacts": 2196}, {"country": "Nauru", "iso": "NRU", "region": "Other", "contacts": 2151}, {"country": "Saint Helena", "iso": "SHN", "region": "Middle East & Africa", "contacts": 1894}, {"country": "Niue", "iso": "NIU", "region": "Asia-Pacific", "contacts": 1514}, {"country": "French Southern Territories", "iso": "ATF", "region": "Other", "contacts": 1339}, {"country": "Saint Barthélemy", "iso": "BLM", "region": "Latam", "contacts": 1326}, {"country": "Marshall Islands", "iso": "MHL", "region": "Asia-Pacific", "contacts": 922}, {"country": "Saint Martin", "iso": "MAF", "region": "Latam", "contacts": 365}, {"country": "Norfolk Island", "iso": "NFK", "region": "Asia-Pacific", "contacts": 3}, {"country": "Western Sahara", "iso": "ESH", "region": "Middle East & Africa", "contacts": 2}];
+
+const REGIONS = ["Global", "North America", "Europe", "Asia-Pacific", "Latam", "Middle East & Africa"];
+
+const INACTIVE_COLOR = "#dce3ed";
+
+let currentRegion = "Global";
+
+function fmt(n) {
+  if (n >= 1e9) return (n / 1e9).toFixed(1) + "B";
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + "M";
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
+  return n.toLocaleString();
+}
+
+function pct(n) {
+  return (n * 100).toFixed(1) + "%";
+}
+
+function getFilteredData(region) {
+  if (region === "Global") return DATA;
+  return DATA.filter(d => d.region === region);
+}
+
+function computeMetrics(items) {
+  const totalContacts = items.reduce((s, d) => s + d.contacts, 0);
+  const countries = items.length;
+  const maxCountry = items.reduce((best, d) => d.contacts > best.contacts ? d : best, items[0]);
+  return { totalContacts, countries, maxCountry };
+}
+
+function renderTabs() {
+  const container = document.getElementById("regionTabs");
+  container.innerHTML = REGIONS.map(r =>
+    `<div class="region-tab ${r === currentRegion ? 'active' : ''}" onclick="selectRegion('${r}')">${r}</div>`
+  ).join("");
+}
+
+function renderMetrics(region) {
+  const items = getFilteredData(region);
+  if (!items.length) return;
+  const m = computeMetrics(items);
+  const globalTotal = DATA.reduce((s, d) => s + d.contacts, 0);
+  const regionShare = m.totalContacts / globalTotal;
+  const container = document.getElementById("metrics");
+
+  // Sort countries by contacts desc
+  const sorted = [...items].sort((a, b) => b.contacts - a.contacts);
+  const maxContacts = sorted[0].contacts;
+
+  container.innerHTML = `
+    <div class="metric-card highlight">
+      <div class="metric-value">${fmt(m.totalContacts)}</div>
+      <div class="metric-label">Total Contacts</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">${m.countries}</div>
+      <div class="metric-label">Countries</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">${pct(regionShare)}</div>
+      <div class="metric-label">Share of Global</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">${m.maxCountry.country}</div>
+      <div class="metric-label">Top Country</div>
+    </div>
+    <div class="country-list-card">
+      <h3>Countries — ${region} (sorted by contacts)</h3>
+      ${sorted.map(d => `
+        <div class="country-row">
+          <span class="country-name">${d.country}</span>
+          <span>
+            <span class="country-count">${fmt(d.contacts)}</span>
+            <span class="bar-bg"><span class="bar-fill" style="width:${(d.contacts / maxContacts * 100).toFixed(1)}%"></span></span>
+          </span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderMap(region) {
+  const active = getFilteredData(region);
+  const activeISOs = new Set(active.map(d => d.iso));
+
+  // All other countries in dataset but not in selected region
+  const others = region === "Global" ? [] : DATA.filter(d => !activeISOs.has(d.iso));
+
+  const traces = [];
+
+  // Other regions — faded
+  if (others.length > 0) {
+    traces.push({
+      type: "choropleth",
+      locations: others.map(d => d.iso),
+      z: others.map(() => 0.5),
+      text: others.map(d => `<b>${d.country}</b><br>${d.region}<br>Contacts: ${fmt(d.contacts)}`),
+      hovertemplate: "%{text}<extra></extra>",
+      colorscale: [[0, INACTIVE_COLOR], [1, INACTIVE_COLOR]],
+      showscale: false,
+      marker: { line: { color: "#fff", width: 0.5 } },
+    });
+  }
+
+  // Active countries — blue gradient
+  if (active.length > 0) {
+    traces.push({
+      type: "choropleth",
+      locations: active.map(d => d.iso),
+      z: active.map(d => d.contacts),
+      text: active.map(d =>
+        `<b>${d.country}</b><br><br>` +
+        `Contacts: <b>${fmt(d.contacts)}</b><br>` +
+        `Region: ${d.region}`
+      ),
+      hovertemplate: "%{text}<extra></extra>",
+      colorscale: [
+        [0, "#a8c4e0"],
+        [0.3, "#6a9fd8"],
+        [0.6, "#3366cc"],
+        [1, "#1a3a7a"],
+      ],
+      showscale: false,
+      marker: { line: { color: "#fff", width: 0.5 } },
+    });
+  }
+
+  const layout = {
+    geo: {
+      showframe: false,
+      showcoastlines: false,
+      showland: true,
+      landcolor: "#eef1f6",
+      showocean: true,
+      oceancolor: "#fff",
+      showcountries: true,
+      countrycolor: "#e0e0e0",
+      projection: { type: "natural earth" },
+      bgcolor: "#fff",
+    },
+    paper_bgcolor: "#fff",
+    plot_bgcolor: "#fff",
+    margin: { l: 0, r: 0, t: 0, b: 0 },
+    height: 420,
+    dragmode: false,
+  };
+
+  Plotly.react("map", traces, layout, { displayModeBar: false, responsive: true });
+}
+
+function selectRegion(region) {
+  currentRegion = region;
+  renderTabs();
+  renderMap(region);
+  renderMetrics(region);
+}
+
+// Init
+if (DATA.length > 0) {
+  renderTabs();
+  renderMap("Global");
+  renderMetrics("Global");
+} else {
+  document.getElementById("metrics").innerHTML = '<div class="metric-card" style="grid-column:1/-1;text-align:center;padding:40px"><div class="metric-label">No data loaded — run generate.py with your CSV to populate the map</div></div>';
+  renderTabs();
+}
+</script>
+</body>
+</html>
